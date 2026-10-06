@@ -24,8 +24,9 @@ const POWERSHELL = 'powershell.exe'
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url))
 
 
-// The bridge ships next to this adapter's parent directory.  Set CST_AI_BRIDGE
-// to an absolute path to run against another checkout or installation.
+// The bridge, the Python adapter and the Python package ship beside this module:
+// the repository root is the DSH bundle, so an installed copy is self-contained.
+// Set CST_AI_BRIDGE to an absolute path only to run against another installation.
 function resolveCstAiBridge() {
   const fromEnv = process.env.CST_AI_BRIDGE
 
@@ -38,7 +39,6 @@ function resolveCstAiBridge() {
 
   return resolve(
     MODULE_DIR,
-    '..',
     'cst_ai_tool_bridge.ps1',
   )
 }

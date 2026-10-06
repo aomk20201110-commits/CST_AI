@@ -39,11 +39,11 @@ Studio Suite installation, not by this project.
 
 ## 3. Node.js / DSH tool adapter
 
-`dsh-cst-tools/` is an optional tool adapter written for the DeepSeek Harness (DSH)
-plugin system. It imports only Node.js built-in modules (`node:child_process`,
-`node:util`, `node:path`, `node:url`). It declares no npm dependencies, and the file
-`dsh-cst-tools/package.json` intentionally has no `dependencies` or `devDependencies`
-block.
+The DSH bundle (`index.js` plus the bundle manifest at the repository root) is an
+optional tool adapter written for the DeepSeek Harness (DSH) plugin system. It imports
+only Node.js built-in modules (`node:child_process`, `node:util`, `node:path`,
+`node:url`). It declares no npm dependencies, and `package.json` intentionally has no
+`dependencies`, `devDependencies` or `scripts` block.
 
 ## 4. PowerShell
 

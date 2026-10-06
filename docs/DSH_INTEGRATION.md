@@ -5,7 +5,7 @@ optional **agent-facing** surface: the five tools a DeepSeek Harness (DSH) sessi
 and the two hops that carry a request from the harness to the plugin.
 
 ```
-DSH tool call  →  dsh-cst-tools/index.js  →  cst_ai_tool_bridge.ps1  →  cst_ai_tool.py  →  cst_ai_plugin.public
+DSH tool call  →  index.js  →  cst_ai_tool_bridge.ps1  →  cst_ai_tool.py  →  cst_ai_plugin.public
 ```
 
 Each hop has exactly one job, and none of them can run a solve on its own.
@@ -16,15 +16,41 @@ Each hop has exactly one job, and none of them can run a solve on its own.
 
 | file | role |
 |---|---|
-| `dsh-cst-tools/index.js` | registers the five tools; encodes the request; launches the bridge; parses one JSON envelope |
-| `dsh-cst-tools/package.json` | ESM package (`"type": "module"`), declares `dsh.bundle.patch: ./cordis.patch.yml`, `files: [index.js, cordis.patch.yml]` |
-| `dsh-cst-tools/cordis.patch.yml` | the one-line patch that inserts the plugin: `- insert: [ {id: cst-tools, name: dsh-cst-tools} ]` |
+| `index.js` | registers the five tools; encodes the request; launches the bridge; parses one JSON envelope |
+| `package.json` | the DSH bundle manifest: ESM package (`"type": "module"`), `dsh.bundle.patch: ./cordis.patch.yml`, no dependencies, no build scripts |
+| `cordis.patch.yml` | the one-line patch that inserts the plugin: `- insert: [ {id: cst-tools, name: dsh-cst-tools} ]` |
 | `cst_ai_tool_bridge.ps1` | picks the interpreter, checks both paths exist, sets UTF-8 IO, propagates the exit code |
 | `cst_ai_tool.py` | the only entry point that talks to `cst_ai_plugin.public`; shapes every outcome into one envelope |
+| `cst_ai_plugin/` | the plugin itself; imported by `cst_ai_tool.py` from the directory beside it |
 
 The adapter is deliberately thin: it may import `cst_ai_plugin.public` and nothing else.
 It never connects to CST, never builds, solves or extracts, and never shells out to
 `cst_cli.py`.
+
+### One installation action
+
+The repository root is the bundle, so the whole product — adapter, bridge, Python
+adapter and Python package — is installed by one standard DSH action:
+
+```powershell
+dsh plugin --profile web add github:aomk20201110-commits/CST_AI#<40-char-commit>
+```
+
+Consequences worth knowing:
+
+* **No build step.** The manifest declares no `scripts`, so pnpm ≥ 10 never needs an
+  `allowBuilds` entry and installing the plugin never executes package code at install
+  time.
+* **No file subset.** The manifest declares no `files` list, so npm packaging falls back
+  to `.gitignore`; a git install copies the tracked checkout. Either way the installed
+  copy carries `index.js`, `cordis.patch.yml`, `cst_ai_tool_bridge.ps1`,
+  `cst_ai_tool.py` and `cst_ai_plugin/`.
+* **Nothing to configure but the interpreter.** `index.js` resolves
+  `cst_ai_tool_bridge.ps1` beside itself, and the bridge resolves `cst_ai_tool.py` beside
+  *itself*, so an installed copy needs no `CST_AI_BRIDGE`. Set `CST_AI_PYTHON` to the
+  CST interpreter.
+* **Pin the commit.** A GitHub install fetches source rather than a built artifact; the
+  commit is what makes the installed bytes reproducible.
 
 ---
 
@@ -181,8 +207,8 @@ Two consequences worth knowing when debugging:
   no escaping at the PowerShell boundary.
 
 The bridge path itself resolves in this order: `process.env.CST_AI_BRIDGE`, then
-`cst_ai_tool_bridge.ps1` next to the repository root (one level above
-`dsh-cst-tools/`). No absolute path is compiled into the adapter.
+`cst_ai_tool_bridge.ps1` in the same directory as `index.js`. No absolute path is
+compiled into the adapter, and an installed bundle needs no override at all.
 
 ---
 
@@ -196,24 +222,23 @@ export const inject = ['tools'];
 export function apply(ctx) { /* registers the five tools */ }
 ```
 
-Registration therefore happens wherever your harness loads tool packages from, using
-the declaration in `package.json`:
+Registration happens through the manifest, which is the bundle declaration the DSH
+loader reads (`package.json` at the repository root):
 
 ```json
 {
   "name": "dsh-cst-tools",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "type": "module",
   "main": "index.js",
-  "files": ["index.js", "cordis.patch.yml"],
   "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
 }
 ```
 
-`cordis.patch.yml` contains only the insert line shown in §1. This repository does not
-assume a particular harness layout: copy or link `dsh-cst-tools/` into the location your
-harness loads plugins from, and point `CST_AI_BRIDGE` at the bridge if the two are not
-siblings.
+`cordis.patch.yml` contains only the insert line shown in §1, and it names the package
+rather than a path, so node resolution finds the installed copy wherever the harness
+put it. There is no harness layout to assume and nothing to copy by hand; the install
+command in §1 is the whole wiring step.
 
 ---
 

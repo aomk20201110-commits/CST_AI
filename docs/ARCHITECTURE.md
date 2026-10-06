@@ -15,7 +15,7 @@ aspiration.
                                 │  one of: plan | run | status | inspect | resume
                                 ▼
 ┌───────────────────────────────────────────────────────────────────────────┐
-│ dsh-cst-tools/index.js            OPTIONAL Node tool adapter              │
+│ index.js                          OPTIONAL Node tool adapter              │
 │   registers 5 DSH tools; builds a JSON request; base64-encodes it;        │
 │   launches the bridge; parses exactly one JSON envelope from stdout.      │
 └───────────────────────────────┬───────────────────────────────────────────┘

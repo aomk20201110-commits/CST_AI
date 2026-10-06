@@ -21,10 +21,12 @@ if _REPO_ENTRY in sys.path:
     sys.path.remove(_REPO_ENTRY)
 sys.path.insert(0, _REPO_ENTRY)
 
-INDEX_JS = REPO_ROOT / "dsh-cst-tools" / "index.js"
-PACKAGE_JSON = REPO_ROOT / "dsh-cst-tools" / "package.json"
-CORDIS_PATCH = REPO_ROOT / "dsh-cst-tools" / "cordis.patch.yml"
+INDEX_JS = REPO_ROOT / "index.js"
+PACKAGE_JSON = REPO_ROOT / "package.json"
+CORDIS_PATCH = REPO_ROOT / "cordis.patch.yml"
 BRIDGE_PS1 = REPO_ROOT / "cst_ai_tool_bridge.ps1"
+PY_ADAPTER = REPO_ROOT / "cst_ai_tool.py"
+PY_PACKAGE = REPO_ROOT / "cst_ai_plugin"
 
 TOOLS = (
     "plan_cst_ai_task",
@@ -98,9 +100,47 @@ class TestToolAdapter(unittest.TestCase):
 
         self.assertEqual(package["name"], "dsh-cst-tools")
         self.assertEqual(package["type"], "module")
-        self.assertIn("index.js", package["files"])
+        self.assertEqual(package["main"], "index.js")
         self.assertEqual(package["dsh"]["bundle"]["patch"], "./cordis.patch.yml")
         self.assertTrue(CORDIS_PATCH.is_file())
+
+        # a marketplace installer pins an exact commit and requires a stable
+        # semver; a prerelease or a range is rejected before anything is installed
+        self.assertRegex(package["version"], r"^\d+\.\d+\.\d+$")
+
+        # the bundle must be installable with no build step: pnpm >= 10 refuses to
+        # run a git dependency's build scripts until the user allowlists the
+        # package, and that allowance means executing its code at install time
+        self.assertNotIn("scripts", package)
+
+        # the adapter is dependency-free, and the package ships the whole product
+        # (bridge, Python adapter, Python package) rather than a file subset: npm
+        # falls back to .gitignore when no `files` list is declared, and a git
+        # install copies the tracked checkout
+        self.assertNotIn("dependencies", package)
+        self.assertNotIn("files", package)
+
+        # the layer names the package, not a path: node resolution finds the
+        # installed copy wherever the harness put it
+        patch = read(CORDIS_PATCH)
+
+        self.assertIn("- insert:", patch)
+        self.assertIn(package["name"], patch)
+        self.assertIn("cst-tools", patch)
+
+    def test_the_bundle_is_self_contained(self):
+        """The installed copy must carry everything the adapter launches."""
+
+        self.assertTrue(BRIDGE_PS1.is_file())
+        self.assertTrue(PY_ADAPTER.is_file())
+        self.assertTrue(PY_PACKAGE.is_dir())
+
+        # index.js resolves the bridge beside itself; a parent-directory hop would
+        # point outside an installed package (node_modules/), not inside it
+        source = read(INDEX_JS)
+
+        self.assertRegex(source, r"resolve\(\s*MODULE_DIR,\s*'cst_ai_tool_bridge\.ps1'")
+        self.assertNotRegex(source, r"resolve\(\s*MODULE_DIR,\s*'\.\.'")
 
 
 class TestBridge(unittest.TestCase):

@@ -174,7 +174,9 @@ v111a_analysis.py             farfield grid analysis
 v111a_export.py               farfield activation + export
 v118_radiator.py              farfield readback driver
 v19b_real_solve.py            solve backend
-dsh-cst-tools/                optional DSH tool adapter (Node, no dependencies)
+index.js                      optional DSH tool adapter (Node, no dependencies)
+package.json                  DSH bundle manifest (dsh.bundle.patch)
+cordis.patch.yml              the one-line layer that registers the bundle
 docs/                         architecture, TaskSpec reference, DSH integration
 examples/                     generic example task specs
 tests/                        offline test suite

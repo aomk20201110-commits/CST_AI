@@ -102,7 +102,7 @@ summarised in [RELEASE_NOTES.md](RELEASE_NOTES.md).
    agent / script
         │
         ▼
-   dsh-cst-tools/index.js              DSH tool adapter (Node, optional)
+   index.js                            DSH tool adapter (Node, optional)
         │  base64 JSON request
         ▼
    cst_ai_tool_bridge.ps1              PowerShell launcher (resolves interpreter)
@@ -141,7 +141,7 @@ tool-adapter details.
   CST_AI imports `cst.interface` / `cst.results`, which exist only in that
   interpreter — a stock CPython installation does not have them.
 * **PowerShell 5.1 or newer** for `cst_ai_tool_bridge.ps1`.
-* **Node.js 18+** *only* if you want the DSH tool adapter (`dsh-cst-tools`).
+* **Node.js 18+** *only* if you want the DSH tool adapter (the `dsh-cst-tools` bundle).
 * **No Python packages.** CST_AI uses the standard library only. There is nothing to
   `pip install`, and no virtual environment to create.
 
@@ -171,13 +171,28 @@ tool-adapter details.
    * `expected_project` — optional guard: the project path a run is expected to touch,
    * `parameter_rules` — optional min/max rules for parameter validation.
 
-4. *(Optional)* Install the DSH tool adapter. Copy `dsh-cst-tools/` into your DSH
-   plugin directory and copy `cst_ai_tool_bridge.ps1` next to it, or set
-   `CST_AI_BRIDGE` to the absolute path of the bridge:
+4. *(Optional)* Install the DSH bundle instead of wiring a checkout by hand:
+
+   ```powershell
+   dsh plugin --profile web add github:aomk20201110-commits/CST_AI#<40-char-commit>
+   ```
+
+   The repository root **is** the bundle: `package.json` declares
+   `dsh.bundle.patch: ./cordis.patch.yml`, so one `dsh plugin add` installs the
+   Node adapter, the PowerShell bridge and the Python package together. There is no
+   build step and no install-time code execution, so pnpm never has to be
+   allowlisted. Pin a commit — a GitHub install fetches source, so a branch would
+   be free to change under you.
+
+   A manual checkout keeps working: `CST_AI_BRIDGE` points the adapter at another
+   installation's bridge.
 
    ```powershell
    $env:CST_AI_BRIDGE = "C:\path\to\CST_AI_public\cst_ai_tool_bridge.ps1"
    ```
+
+   The DSH marketplace listing is not published yet; until it is, install from
+   GitHub as above.
 
 5. Run the tests to confirm the checkout is healthy (see [tests/](tests/)):
 

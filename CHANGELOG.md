@@ -6,6 +6,36 @@ provenance and move independently of the release label.
 
 ---
 
+## [Unreleased] — DSH packaging
+
+**Status:** the plugin is installable as a DSH bundle in one action.
+
+The DeepSeek Harness distribution layer moved from a `dsh-cst-tools/` subdirectory to the
+repository root, so the entry point named in a marketplace submission and the package the
+harness installs are the same package.
+
+### Added
+
+* `package.json` at the repository root declaring
+  `dsh.bundle.patch: ./cordis.patch.yml`, with no `dependencies`, no `files` list and no
+  `scripts`. A git install therefore needs no build permission and no `allowBuilds`
+  entry, and it carries the whole product.
+* `cordis.patch.yml` at the repository root: the one-line layer that inserts
+  `dsh-cst-tools`.
+* Install instructions in `README.md` and `docs/DSH_INTEGRATION.md` for
+  `dsh plugin --profile <name> add github:aomk20201110-commits/CST_AI#<commit>`.
+
+### Changed
+
+* `dsh-cst-tools/index.js` → `index.js` (repository root). The adapter resolves
+  `cst_ai_tool_bridge.ps1` in its own directory instead of its parent, so an installed
+  copy is self-contained and `CST_AI_BRIDGE` is no longer needed for a normal install.
+* `dsh-cst-tools/` no longer exists: there is one package and one copy of every file.
+* `tests/test_tool_adapter_static.py` checks the root manifest (stable semver, no build
+  scripts, no dependencies, no `files` subset) and the self-containedness of the bundle.
+
+---
+
 ## [2.0.0] — 2026 — release freeze
 
 **Status:** usable. First public release.
@@ -18,7 +48,8 @@ budget, and a durable, offline-readable run record.
 
 * Public API v1 — `plan`, `run`, `status`, `inspect`, `resume` (`load_task` for reading
   a TaskSpec from disk), exposed through the PowerShell launcher
-  `cst_ai_tool_bridge.ps1` and, optionally, the DSH tool adapter `dsh-cst-tools`.
+  `cst_ai_tool_bridge.ps1` and, optionally, the DSH tool adapter `dsh-cst-tools` (the
+  bundle manifest moved to the repository root under "Unreleased").
 * TaskSpec schema with strict validation: unknown fields rejected, canonical stage
   order enforced, `output_dir` mandatory, and `FORBID` + `SOLVE` refused as a
   contradiction.

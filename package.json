@@ -1,0 +1,16 @@
+{
+  "name": "dsh-cst-tools",
+  "version": "2.0.0",
+  "description": "Safe, resumable CST Studio Suite task automation for DeepSeek Harness.",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
