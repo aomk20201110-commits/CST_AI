@@ -1,0 +1,18 @@
+# Entry for the awesome-dsh-plugin catalog.
+#
+# Target path in a fork of `awesome-dsh-plugin/awesome-dsh-plugin`:
+#   data/plugins/aomk20201110-commits__CST_AI.yml
+#   (slugFor(url): https://github.com/<owner>/<repo> -> <owner>__<repo>.yml)
+#
+# Schema checked against `scripts/lib/entries.mjs`:
+#   ENTRY_KEYS = {url, name, category, description, tarball, file}
+#   category must be one of CAT_IDS; description.en must be a non-empty,
+#   single-line scalar.  The value below is quoted because it contains ": ".
+#
+# Not submitted to any registry; no PR was opened and no fork was created.
+
+url: https://github.com/aomk20201110-commits/CST_AI
+name: CST_AI
+category: tools
+description:
+  en: "Task automation for CST Studio Suite in DeepSeek Harness: plan a TaskSpec without contacting CST, run or resume a budget-bounded solve, then inspect the durable result bundle."
