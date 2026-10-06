@@ -1,0 +1,100 @@
+# ============================================================ Python ========
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# ================================================ local config / secrets ====
+.env
+.env.*
+*.env
+*.local
+*.local.json
+secrets/
+secret/
+*.pem
+*.key
+*.pfx
+*.p12
+credentials.json
+token.json
+
+# ================================================= CST projects / results ===
+# Never commit solver inputs, results or locks.
+*.cst
+*.lok
+*.ffm
+*.fme
+*.feh
+*.fef
+*.sat
+*.step
+*.stp
+*.igs
+*.iges
+*.mod
+*.his
+*.prj
+Results/
+Result/
+results/
+Temp/
+temp/
+tmp/
+temp_*/
+*_temp/
+*_disposable/
+*_scratch/
+
+# ============================================ run stores / audit artifacts ==
+# CST_AI writes runs here; they are per-user execution state, not source.
+runs/
+run_store/
+ledger/
+ledgers/
+reports/
+artifacts/
+operations/
+model_ledger/
+cache/
+.tmp/
+*.jsonl
+*.log
+
+# ================================================ backups / patch residue ===
+*.bak
+*.bak.*
+*.orig
+*.rej
+*.old
+*~
+backup/
+backups/
+*_backup/
+
+# ==================================================== private material =====
+references/
+paper_sources/
+ingestion/
+private/
+internal/
+
+# ===================================================== editors / OS ========
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini

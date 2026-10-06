@@ -1,0 +1,16 @@
+{
+    "expected_project":  null,
+    "parameter_rules":  {
+                            "arm_length":  {
+                                               "min":  50,
+                                               "max":  90
+                                           },
+                            "arm_width":  {
+                                              "min":  0.5,
+                                              "max":  10
+                                          }
+                        },
+    "run_store_path":  "runs",
+    "default_output_root":  "runs",
+    "cst_runtime_pid_policy":  "AUTO"
+}

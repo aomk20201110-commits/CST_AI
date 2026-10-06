@@ -1,0 +1,19 @@
+{
+  "task_id": "example_build_and_solve",
+  "task_kind": "BUILD_AND_SOLVE",
+  "label": "Build a model from a fixture and solve it once",
+  "stages": ["CONNECT", "BUILD", "VERIFY", "SOLVE", "EXTRACT", "ANALYZE", "REPORT"],
+  "solve_policy": "ALLOW_ONE",
+  "spec": {
+    "fixture_definition": "C:/path/to/your_fixture.json",
+    "project_path": "C:/path/to/your_working_area/example_build_and_solve.cst",
+    "solver_backend": "floquet",
+    "floquet_modes_per_face": 2,
+    "incident_mode": "Zmin(1)",
+    "extract_mode": "floquet_rta"
+  },
+  "inputs": {},
+  "expected_outputs": ["build_readback", "s_parameters", "resonance_table"],
+  "output_dir": "runs/example_build_and_solve",
+  "notes": "TEST EXAMPLE - edit before running. solve_policy ALLOW_ONE authorises exactly one fresh solver run, and the plan reports PLANNED_SOLVE_COUNT / MAX_AUTHORIZED_SOLVES before anything happens. 'fixture_definition' is your own fixture JSON: an object whose 'command_blocks' map history-block names to verbatim CST history text. The public repository ships no fixture files, so write one from your own model (see docs/TASKSPEC.md section 5.2). Point 'project_path' at a scratch directory outside this repository: this task creates that project. 'max_solves' is only allowed with solve_policy ALLOW_UP_TO_N, which is why this example does not declare it."
+}

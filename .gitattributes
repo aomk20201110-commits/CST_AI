@@ -1,0 +1,15 @@
+# Line endings are normalised on commit, so a checkout on any platform produces
+# the same bytes as the tagged release.
+* text=auto
+
+*.py text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+VERSION text eol=lf
+.gitignore text eol=lf
+
+# Windows-only entry point: PowerShell and Git Bash both read CRLF happily.
+*.ps1 text eol=crlf

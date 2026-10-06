@@ -1,0 +1,16 @@
+{
+  "task_id": "example_load_existing_result",
+  "task_kind": "LOAD_EXISTING_RESULT",
+  "label": "Read a solved project and report its resonance",
+  "stages": ["CONNECT", "EXTRACT", "ANALYZE", "REPORT"],
+  "solve_policy": "FORBID",
+  "spec": {
+    "existing_project": "C:/path/to/your_already_solved_model.cst",
+    "incident_mode": "Zmin(1)",
+    "extract_mode": "floquet_rta"
+  },
+  "inputs": {},
+  "expected_outputs": ["s_parameters", "resonance_table"],
+  "output_dir": "runs/example_load_existing",
+  "notes": "TEST EXAMPLE - edit before running. solve_policy FORBID means no solver run can occur: this task reads a project that was solved earlier and extracts S-parameter channels, then derives resonance / FWHM / Q. Point 'existing_project' at your own solved .cst (the Python result API cannot read a relative path), and point 'output_dir' somewhere outside this repository. If the project contains no '1D Results\\S-Parameters\\' channels the extract stage reports RESULT_NOT_FOUND rather than inventing numbers."
+}

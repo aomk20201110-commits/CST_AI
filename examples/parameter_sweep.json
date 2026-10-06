@@ -1,0 +1,38 @@
+{
+  "task_id": "example_parameter_sweep",
+  "task_kind": "PARAMETER_SWEEP",
+  "label": "Sweep one geometric parameter over three points, reusing what already exists",
+  "stages": ["CONNECT", "BUILD", "VERIFY", "SOLVE", "EXTRACT", "ANALYZE", "REPORT"],
+  "solve_policy": "ALLOW_UP_TO_N",
+  "max_solves": 3,
+  "spec": {
+    "solver_backend": "floquet",
+    "floquet_modes_per_face": 2,
+    "incident_mode": "Zmin(1)",
+    "extract_mode": "floquet_rta",
+    "points": [
+      {
+        "parameters": {"cell_size_mm": 6.5},
+        "fixture_definition": "C:/path/to/your_fixture_6p5mm.json",
+        "project_path": "C:/path/to/your_working_area/sweep_6p5mm.cst",
+        "reuse_signature": "example_sweep|cell_size_mm=6.5"
+      },
+      {
+        "parameters": {"cell_size_mm": 7.0},
+        "fixture_definition": "C:/path/to/your_fixture_7p0mm.json",
+        "project_path": "C:/path/to/your_working_area/sweep_7p0mm.cst",
+        "reuse_signature": "example_sweep|cell_size_mm=7.0"
+      },
+      {
+        "parameters": {"cell_size_mm": 7.5},
+        "fixture_definition": "C:/path/to/your_fixture_7p5mm.json",
+        "project_path": "C:/path/to/your_working_area/sweep_7p5mm.cst",
+        "reuse_signature": "example_sweep|cell_size_mm=7.5"
+      }
+    ]
+  },
+  "inputs": {},
+  "expected_outputs": ["s_parameters", "resonance_table", "sweep_table"],
+  "output_dir": "runs/example_parameter_sweep",
+  "notes": "TEST EXAMPLE - edit before running. solve_policy ALLOW_UP_TO_N with max_solves 3 is a CEILING, not a promise: any point whose (reuse_signature, hashes) already exists in the reuse index is read instead of solved, and the plan lists every point as reused / new / reuse-denied before the first solve. If you would rather never solve, use solve_policy REUSE_ONLY with the SOLVE stage still listed - the planner then converts that stage into reuse decisions. Each point needs its own fixture_definition and project_path here in case they differ per point; both may also be declared once at spec level and shared. Run this with reuse_index passed to the plan/run call to get reuse between sweeps."
+}
